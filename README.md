@@ -22,7 +22,7 @@ Back-end
 - Entity Framework Core
 - SQL Server
 
-## 🎯 Funcionalidades
+## ⚙️ Funcionalidades
 - Cadastro de clínicas
 - Cadastro de pacientes
 - Cadastro de médicos
