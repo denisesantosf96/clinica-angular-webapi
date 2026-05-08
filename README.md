@@ -34,14 +34,6 @@ Back-end
 - Máscaras de telefone e CPF
 - Busca de estados e cidades
 
-## 🔗 Arquitetura do projeto
-O sistema é dividido em duas partes:
-
-- Front-end (Angular): responsável pela interface do usuário
-- Back-end (Web API): responsável pelas regras de negócio e banco de dados
-
-A comunicação entre eles é feita via HTTP (REST API).
-
 ## 🎯 Objetivo do projeto
 
 Este projeto foi desenvolvido com o objetivo de praticar:
