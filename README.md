@@ -1,4 +1,4 @@
-# 🏥 Sistema de Gestão de Clínica (Full Stack)
+# Sistema de Gestão de Clínica (Full Stack)
 
 ## 📌 Descrição
 Sistema web full stack desenvolvido para gerenciamento de clínicas, permitindo o controle de pacientes, médicos e consultas.
