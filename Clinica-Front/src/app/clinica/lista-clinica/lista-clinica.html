@@ -1,0 +1,111 @@
+<div fxLayout="row" fxLayoutAlign="center">
+    <div fxLayout="column" fxFlex="1000px">
+        <form class="mt-60" #buscaForm="ngForm" (ngSubmit)="pesquisar()">
+            <mat-card appearance="outlined">
+                <mat-card-header>
+                    <mat-card-title>Clínica</mat-card-title>
+                </mat-card-header>
+                <mat-card-content class="mt-20">
+                    <div fxLayout="row">
+                        <div fxLayout="column" fxFlex="950px">
+                            <mat-form-field class="full-width">
+                                <mat-label>Nome:</mat-label>
+                                <input name="nomeBusca" 
+                                [(ngModel)]="nomeBusca" 
+                                (keyup.enter)="pesquisar()"
+                                matInput  />
+                                @if(nomeBusca){
+                    <button
+                        mat-icon-button
+                        matSuffix
+                        type="button"
+                        (click)="limparBusca()">
+
+                        <mat-icon>close</mat-icon>
+
+                    </button>
+                }
+
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button type="submit" mat-flat-button color="primary">
+                        <mat-icon fontIcon="search"></mat-icon>
+                        Pesquisar
+                    </button>
+                    <button type="submit" 
+                        mat-flat-button 
+                        class="ml-5" 
+                        color="accent"
+                        (click)="novo()">
+                        <mat-icon fontIcon="add"></mat-icon>
+                        Novo
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+        </form>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutAlign="center" class="mt-20">
+    <div fxLayout="column" fxFlex="1000px">
+        <mat-card appearance="outlined">
+            <mat-card-header>
+                <mat-card-title>Resultado</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+
+                <table mat-table [dataSource]="listaClinicas">
+
+                    <ng-container matColumnDef="id">
+                        <th mat-header-cell *matHeaderCellDef>Código</th>
+                        <td mat-cell *matCellDef="let clinica">{{ clinica.id }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="nome">
+                        <th mat-header-cell *matHeaderCellDef>Nome</th>
+                        <td mat-cell *matCellDef="let clinica">{{ clinica.nome }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="cidade">
+                        <th mat-header-cell *matHeaderCellDef>Cidade</th>
+                        <td mat-cell *matCellDef="let clinica">{{ clinica.cidade }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="telefone">
+                        <th mat-header-cell *matHeaderCellDef>Telefone</th>
+                        <td mat-cell *matCellDef="let clinica">{{ clinica.telefone }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="acoes">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let clinica">
+                            <button type="button" mat-button (click)="preparaEditar(clinica.id)">
+                                <mat-icon fontIcon="edit"></mat-icon>
+                                Editar
+                            </button>
+
+                            @if(!clinica.deletando){
+                                <button type="button" mat-button (click)="preparaDeletar(clinica)">
+                                    <mat-icon fontIcon="delete"></mat-icon>
+                                    Deletar
+                                </button>
+                            } @else {
+                                <button type="button" mat-button (click)="deletar(clinica)">
+                                    <mat-icon fontIcon="question_mark"></mat-icon>
+                                    Confirma
+                                </button>
+                            }
+                        </td>
+                    </ng-container>
+                    
+
+                    <tr mat-header-row *matHeaderRowDef="colunasTable"></tr>
+                    <tr mat-row *matRowDef="let row; columns: colunasTable" ></tr>
+                </table>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

@@ -1,0 +1,172 @@
+<div fxLayout="row" fxLayoutAlign="center">
+    <div fxLayout="column" fxFlex="900px">
+        <form class="mt-60" #clientesFrm="ngForm" (ngSubmit)="salvar()">
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>Dados Pessoais</mat-card-title>
+                </mat-card-header>
+                <mat-card-content class="mt-20">
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
+                        <div fxLayout="column" fxFlex="800px">
+                            <mat-form-field class="full-width">
+                                <mat-label>Nome: *</mat-label>
+                                <input type="text" 
+                                       [(ngModel)]="clinica.nome"
+                                       name="nome"
+                                       placeholder="Ex: José da Silva" matInput />
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
+                        <div fxLayout="column" fxFlex="800px">
+                            <mat-form-field class="full-width">
+                                <mat-label>Telefone: *</mat-label>
+                                <input type="text" 
+                                       [(ngModel)]="clinica.telefone"
+                                       name="telefone"
+                                       mask="(00) 0000-0000||(00) 00000-0000"
+                                       [dropSpecialCharacters]="false"
+                                       placeholder="Digite seu telefone" matInput />
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
+                        <div fxLayout="column" fxFlex="400px">
+                            <mat-form-field class="full-width">
+                                <mat-label>Endereço: *</mat-label>
+                                <input type="text" 
+                                       [(ngModel)]="clinica.endereco"
+                                       name="endereco"                                      
+                                       placeholder="Digite seu endereço" matInput />
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
+                        <div fxLayout="column" fxFlex="400px">
+                            <mat-form-field class="full-width">
+                                <mat-label>Nº: *</mat-label>
+                                <input type="number" 
+                                       [(ngModel)]="clinica.numero"
+                                       name="numero"
+                                       placeholder="Digite o número" matInput />
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
+                        <div fxLayout="column" fxFlex="400px">
+                            <mat-form-field class="full-width">
+                                <mat-label>Complemento: *</mat-label>
+                                <input type="text" 
+                                       [(ngModel)]="clinica.complemento"
+                                       name="complemento"
+                                       placeholder="Digite o complemento" matInput />
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
+                        <div fxLayout="column" fxFlex="400px">
+                            <mat-form-field class="full-width">
+                                <mat-label>Bairro: *</mat-label>
+                                <input type="text" 
+                                       [(ngModel)]="clinica.bairro"
+                                       name="bairro"
+                                       placeholder="Digite o bairro" matInput />
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
+                        <div fxLayout="column" fxFlex="400px">
+                            <mat-form-field class="full-width">
+                                <mat-label>Estado: *</mat-label> 
+                                <mat-select [(ngModel)]="clinica.estado" 
+                                            name="estado"
+                                            (selectionChange)="carregarMunicipios($event.value)">
+                                    <mat-option *ngFor="let estado of estados" [value]="estado.sigla">
+                                        {{ estado.sigla }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div> 
+
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
+                        <div fxLayout="column" fxFlex="400px">
+                            <mat-form-field class="full-width">
+                                <mat-label>Cidade: *</mat-label>
+                                <mat-select [(ngModel)]="clinica.cidade"
+                                            name="cidade">
+                                    <mat-option *ngFor="let c of municipios" [value]="c.nome">
+                                        {{ c.nome }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
+                        <div fxLayout="column" fxFlex="400px">
+                            <mat-form-field class="full-width">
+                                <mat-label>País: *</mat-label>
+                                <input type="text" 
+                                       [(ngModel)]="clinica.pais"
+                                       name="pais"
+                                       placeholder="Digite o país" matInput />
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
+                        <div fxLayout="column" fxFlex="400px">
+                            <mat-form-field class="full-width">
+                                <mat-label>CEP: *</mat-label>
+                                <input type="text" 
+                                       [(ngModel)]="clinica.cep"
+                                       name="cep"
+                                       matInput mask="00000-000"
+                                       placeholder="Digite o CEP" matInput />
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+
+                </mat-card-content>
+                <mat-card-actions>
+                    @if(!atualizando){
+                        <button mat-flat-button color="accent" type="submit">
+                            <mat-icon fontIcon="save"></mat-icon>
+                            Salvar
+                        </button>
+                        <button
+                            type="button"
+                            mat-flat-button
+                            color="primary"
+                            class="ml-5"
+                            (click)="limpar()">
+                            <mat-icon fontIcon="backspace"></mat-icon>
+                            Limpar
+                        </button>
+                    } @else { 
+                        <button mat-flat-button color="accent">
+                            <mat-icon fontIcon="refresh"></mat-icon>
+                            Atualizar
+                        </button>
+                    }
+                    
+                    <button type="button" 
+                            mat-flat-button color="primary" 
+                            class="ml-5"
+                            (click)="voltar()">
+                        <mat-icon fontIcon="arrow_back"></mat-icon>
+                        Voltar
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+        </form>
+    </div>
+</div>
