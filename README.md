@@ -3,7 +3,7 @@
 ## 📌 Descrição
 Sistema web full stack desenvolvido para gerenciamento de clínicas, permitindo o controle de pacientes, médicos e consultas.
 
-O sistema foi desenvolvido com Angular no front-end e ASP.NET Core Web API no back-end, com banco de dados PostgreSQL.
+O sistema foi desenvolvido com Angular no front-end e ASP.NET Core Web API no back-end, com banco de dados SQL Server.
 
 Este foi o meu primeiro projeto utilizando Angular, integrando front-end moderno com API REST.
 
