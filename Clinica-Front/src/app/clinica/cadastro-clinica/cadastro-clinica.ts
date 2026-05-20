@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout'
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,7 +26,7 @@ import { Estado, Municipio } from '../../models/brasilapi.models';
   imports: [
     FlexLayoutModule,
     CommonModule,
-    FormsModule,
+    ReactiveFormsModule,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
@@ -40,22 +40,9 @@ import { Estado, Municipio } from '../../models/brasilapi.models';
   templateUrl: './cadastro-clinica.html',
   styleUrl: './cadastro-clinica.scss'
 })
-export class CadastroClinicaComponent implements OnInit {
+export class CadastroClinica implements OnInit {
 
-  clinica: Clinica = {
-    id: 0,
-    nome: '',
-    telefone: '',
-    endereco: '',
-    numero: null,
-    complemento: '',
-    bairro: '',
-    cidade: '',
-    estado: '',
-    pais: '',
-    cep: ''
-  };
-  
+  camposForm!: FormGroup;
   atualizando: boolean = false;
   snack: MatSnackBar = inject(MatSnackBar);
   estados: Estado[] = [];
@@ -70,6 +57,21 @@ export class CadastroClinicaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+
+    this.camposForm = new FormGroup({
+      id: new FormControl(0),
+      nome: new FormControl('', Validators.required),
+      telefone: new FormControl('', Validators.required),
+      endereco: new FormControl('', Validators.required),
+      numero: new FormControl(null, Validators.required),
+      complemento: new FormControl(''),
+      bairro: new FormControl('', Validators.required),
+      cidade: new FormControl('', Validators.required),
+      estado: new FormControl('', Validators.required),
+      pais: new FormControl('', Validators.required),
+      cep: new FormControl('', Validators.required)
+    });
+    
     this.carregarEstados();
 
     this.route.queryParamMap.subscribe(params => {
@@ -81,14 +83,13 @@ export class CadastroClinicaComponent implements OnInit {
 
       this.service.buscarClinicaPorId(Number(id)).subscribe({
         next: (clinicaEncontrada) => {
-          this.clinica = { ...clinicaEncontrada };
+          this.camposForm.patchValue(clinicaEncontrada);
           setTimeout(() => {
-            this.clinica.telefone = this.clinica.telefone;
             this.cdr.detectChanges();
           });
 
-          if (this.clinica.estado) {
-            this.brasilApiService.listarMunicipios(this.clinica.estado).subscribe({
+          if (clinicaEncontrada.estado) {
+            this.brasilApiService.listarMunicipios(clinicaEncontrada.estado).subscribe({
               next: (lista) => {
                 this.municipios = lista;
                 this.cdr.detectChanges();
@@ -102,7 +103,11 @@ export class CadastroClinicaComponent implements OnInit {
 
   carregarEstados() {
     this.brasilApiService.listarEstados().subscribe({
-      next: lista => this.estados = lista
+      next: lista => {
+        this.estados = lista.sort((a, b) =>
+          a.sigla.localeCompare(b.sigla)
+        );
+      }
     });
   }
 
@@ -110,51 +115,57 @@ export class CadastroClinicaComponent implements OnInit {
     this.municipios = [];
 
     return this.brasilApiService.listarMunicipios(uf).subscribe({
-      next: lista => this.municipios = lista,
+      next: lista => {
+        this.municipios = lista.sort((a, b) =>
+          a.nome.localeCompare(b.nome)
+        );
+      },
       error: err => console.log(err)
     });
   }  
 
   salvar() {
+    this.camposForm.markAllAsTouched();
 
-  if (!this.atualizando) {
-    this.service.salvar(this.clinica).subscribe({
-      next: () => {
-        this.mostrarMensagem('Salvo com sucesso!');
-        this.router.navigate(['/lista-clinica']);
-      },
-      error: (err) => {
-        console.log(err);
-        this.mostrarMensagem('Erro ao salvar!');
-      }
-    });
-  } else {
-    this.service.atualizar(this.clinica).subscribe({
-      next: () => {
-        this.mostrarMensagem('Atualizado com sucesso!');
-      },
-      error: (err) => {
-        console.log(err);
-        this.mostrarMensagem('Erro ao atualizar!');
-      }
-    });
+    if (this.camposForm.invalid) {
+      return;
+    }
+
+    const clinica: Clinica = this.camposForm.value;
+
+    if (!this.atualizando) {
+      this.service.salvar(clinica).subscribe({
+        next: () => {
+          this.mostrarMensagem('Salvo com sucesso!');
+          this.router.navigate(['/lista-clinica']);
+        },
+        error: (err) => {
+          console.log(err);
+          this.mostrarMensagem('Erro ao salvar!');
+        }
+      });
+    } else {
+      this.service.atualizar(clinica).subscribe({
+        next: () => {
+          this.mostrarMensagem('Atualizado com sucesso!');
+        },
+        error: (err) => {
+          console.log(err);
+          this.mostrarMensagem('Erro ao atualizar!');
+        }
+      });
+    }
   }
-}
 
-  resetForm(): Clinica {
-    return {
-      id: 0,
-      nome: '',
-      telefone: '',
-      endereco: '',
-      numero: null,
-      complemento: '',
-      bairro: '',
-      cidade: '',
-      estado: '',
-      pais: '',
-      cep: ''
-    };
+  isCampoInvalido(nomeCampo: string): boolean {
+
+    const campo = this.camposForm.get(nomeCampo);
+
+    return !!(
+      campo &&
+      campo.invalid &&
+      campo.touched
+    );
   }
 
   mostrarMensagem(mensagem: string) {
@@ -166,7 +177,7 @@ export class CadastroClinicaComponent implements OnInit {
   }
 
   limpar() {
-    this.clinica = this.resetForm();
+    this.camposForm.reset();
     this.municipios = [];
   }
 

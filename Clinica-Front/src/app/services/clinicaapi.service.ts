@@ -25,16 +25,16 @@ export class ClinicaService {
   }
 
   pesquisarClinicas(nomeBusca: string): Observable<Clinica[]> {
-  return this.http.get<Clinica[]>(this.baseURL).pipe(
-    map((clinicas: Clinica[]) => {
-      if (!nomeBusca) return clinicas;
+    return this.http.get<Clinica[]>(this.baseURL).pipe(
+      map((clinicas: Clinica[]) => {
+        if (!nomeBusca) return clinicas;
 
-      return clinicas.filter(c =>
-        c.nome?.toLowerCase().includes(nomeBusca.toLowerCase())
-      );
-    })
-  );
-}
+        return clinicas.filter(c =>
+          c.nome?.toLowerCase().includes(nomeBusca.toLowerCase())
+        );
+      })
+    );
+  }
 
   buscarClinicaPorId(id: number): Observable<Clinica> {
     return this.http.get<Clinica>(`${this.baseURL}/${id}`);

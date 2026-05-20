@@ -1,0 +1,73 @@
+<div fxLayout="row" fxLayoutAlign="center">
+    <div fxLayout="column" fxFlex="900px">
+        <form [formGroup]="camposForm" class="mt-60" (ngSubmit)="salvar()">
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>Cadastro de Especialidade</mat-card-title>
+                </mat-card-header>
+                <mat-card-content class="mt-20">
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
+                        <div fxLayout="column" fxFlex="800px">
+                            <mat-form-field class="full-width">
+                                <mat-label>Nome: </mat-label>
+                                <input type="text" 
+                                       name="nome"
+                                       formControlName="nome"
+                                       placeholder="Ex: Cardiologista" matInput />
+                                <mat-error *ngIf="isCampoInvalido('nome')">
+                                    Nome é obrigatório
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
+                        <div fxLayout="column" fxFlex="800px">
+                            <mat-form-field class="full-width">
+                                <mat-label>Serviço: </mat-label>
+                                <input type="text" 
+                                       name="tipo"
+                                       formControlName="tipo"
+                                       placeholder="Escolha o Serviço desejado" matInput />
+                                <mat-error *ngIf="isCampoInvalido('tipo')">
+                                    Serviço é obrigatório
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>                 
+
+                </mat-card-content>
+                <mat-card-actions>
+                    @if(!atualizando){
+                        <button mat-flat-button color="accent" type="submit">
+                            <mat-icon fontIcon="save"></mat-icon>
+                            Salvar
+                        </button>
+                        <button
+                            type="button"
+                            mat-flat-button
+                            color="primary"
+                            class="ml-5"
+                            (click)="limpar()">
+                            <mat-icon fontIcon="backspace"></mat-icon>
+                            Limpar
+                        </button>
+                    } @else { 
+                        <button mat-flat-button color="accent">
+                            <mat-icon fontIcon="refresh"></mat-icon>
+                            Atualizar
+                        </button>
+                    }
+                    
+                    <button type="button" 
+                            mat-flat-button color="primary" 
+                            class="ml-5"
+                            (click)="voltar()">
+                        <mat-icon fontIcon="arrow_back"></mat-icon>
+                        Voltar
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+        </form>
+    </div>
+</div>

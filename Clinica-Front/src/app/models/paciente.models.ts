@@ -14,4 +14,5 @@ export interface Paciente {
   pais: string;
   cep: string;
   dataNascimento: Date;
+  deletando?: boolean;
 }

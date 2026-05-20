@@ -16,4 +16,5 @@ export interface Medico {
   dataNascimento: Date;
   especializacao: string;
   crm: string;
+  deletando?: boolean;
 }

@@ -1,6 +1,6 @@
 <div fxLayout="row" fxLayoutAlign="center">
     <div fxLayout="column" fxFlex="900px">
-        <form class="mt-60" #clientesFrm="ngForm" (ngSubmit)="salvar()">
+        <form [formGroup]="camposForm" class="mt-60" (ngSubmit)="salvar()">
             <mat-card>
                 <mat-card-header>
                     <mat-card-title>Dados Pessoais</mat-card-title>
@@ -9,11 +9,14 @@
                     <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
                         <div fxLayout="column" fxFlex="800px">
                             <mat-form-field class="full-width">
-                                <mat-label>Nome: *</mat-label>
+                                <mat-label>Nome: </mat-label>
                                 <input type="text" 
-                                       [(ngModel)]="clinica.nome"
                                        name="nome"
+                                       formControlName="nome"
                                        placeholder="Ex: José da Silva" matInput />
+                                <mat-error *ngIf="isCampoInvalido('nome')">
+                                    Nome é obrigatório
+                                </mat-error>
                             </mat-form-field>
                         </div>
                     </div>
@@ -21,13 +24,16 @@
                     <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
                         <div fxLayout="column" fxFlex="800px">
                             <mat-form-field class="full-width">
-                                <mat-label>Telefone: *</mat-label>
+                                <mat-label>Telefone: </mat-label>
                                 <input type="text" 
-                                       [(ngModel)]="clinica.telefone"
                                        name="telefone"
+                                       formControlName="telefone"
                                        mask="(00) 0000-0000||(00) 00000-0000"
                                        [dropSpecialCharacters]="false"
                                        placeholder="Digite seu telefone" matInput />
+                                <mat-error *ngIf="isCampoInvalido('telefone')">
+                                    Telefone é obrigatório
+                                </mat-error>
                             </mat-form-field>
                         </div>
                     </div>
@@ -35,11 +41,14 @@
                     <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
                         <div fxLayout="column" fxFlex="400px">
                             <mat-form-field class="full-width">
-                                <mat-label>Endereço: *</mat-label>
+                                <mat-label>Endereço: </mat-label>
                                 <input type="text" 
-                                       [(ngModel)]="clinica.endereco"
-                                       name="endereco"                                      
+                                       name="endereco"
+                                       formControlName="endereco"                                      
                                        placeholder="Digite seu endereço" matInput />
+                                <mat-error *ngIf="isCampoInvalido('endereco')">
+                                    Endereço é obrigatório
+                                </mat-error>
                             </mat-form-field>
                         </div>
                     </div>
@@ -47,11 +56,14 @@
                     <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
                         <div fxLayout="column" fxFlex="400px">
                             <mat-form-field class="full-width">
-                                <mat-label>Nº: *</mat-label>
+                                <mat-label>Nº: </mat-label>
                                 <input type="number" 
-                                       [(ngModel)]="clinica.numero"
                                        name="numero"
+                                       formControlName="numero" 
                                        placeholder="Digite o número" matInput />
+                                <mat-error *ngIf="isCampoInvalido('numero')">
+                                    Nº é obrigatório
+                                </mat-error>
                             </mat-form-field>
                         </div>
                     </div>
@@ -59,10 +71,10 @@
                     <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
                         <div fxLayout="column" fxFlex="400px">
                             <mat-form-field class="full-width">
-                                <mat-label>Complemento: *</mat-label>
-                                <input type="text" 
-                                       [(ngModel)]="clinica.complemento"
-                                       name="complemento"
+                                <mat-label>Complemento: </mat-label>
+                                <input type="text"   
+                                       name="complemento"                                   
+                                       formControlName="complemento"
                                        placeholder="Digite o complemento" matInput />
                             </mat-form-field>
                         </div>
@@ -71,11 +83,14 @@
                     <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
                         <div fxLayout="column" fxFlex="400px">
                             <mat-form-field class="full-width">
-                                <mat-label>Bairro: *</mat-label>
+                                <mat-label>Bairro: </mat-label>
                                 <input type="text" 
-                                       [(ngModel)]="clinica.bairro"
                                        name="bairro"
+                                       formControlName="bairro" 
                                        placeholder="Digite o bairro" matInput />
+                                <mat-error *ngIf="isCampoInvalido('bairro')">
+                                    Bairro é obrigatório
+                                </mat-error>
                             </mat-form-field>
                         </div>
                     </div>
@@ -83,13 +98,16 @@
                     <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
                         <div fxLayout="column" fxFlex="400px">
                             <mat-form-field class="full-width">
-                                <mat-label>Estado: *</mat-label> 
-                                <mat-select [(ngModel)]="clinica.estado" 
-                                            name="estado"
+                                <mat-label>Estado: </mat-label> 
+                                <mat-select name="estado"
+                                            formControlName="estado"
                                             (selectionChange)="carregarMunicipios($event.value)">
                                     <mat-option *ngFor="let estado of estados" [value]="estado.sigla">
                                         {{ estado.sigla }}
                                     </mat-option>
+                                    <mat-error *ngIf="isCampoInvalido('estado')">
+                                        Estado é obrigatório
+                                    </mat-error>
                                 </mat-select>
                             </mat-form-field>
                         </div>
@@ -98,12 +116,15 @@
                     <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
                         <div fxLayout="column" fxFlex="400px">
                             <mat-form-field class="full-width">
-                                <mat-label>Cidade: *</mat-label>
-                                <mat-select [(ngModel)]="clinica.cidade"
-                                            name="cidade">
+                                <mat-label>Cidade: </mat-label>
+                                <mat-select name="cidade"
+                                            formControlName="cidade">
                                     <mat-option *ngFor="let c of municipios" [value]="c.nome">
                                         {{ c.nome }}
                                     </mat-option>
+                                    <mat-error *ngIf="isCampoInvalido('cidade')">
+                                        Cidade é obrigatório
+                                    </mat-error>
                                 </mat-select>
                             </mat-form-field>
                         </div>
@@ -112,11 +133,14 @@
                     <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
                         <div fxLayout="column" fxFlex="400px">
                             <mat-form-field class="full-width">
-                                <mat-label>País: *</mat-label>
+                                <mat-label>País: </mat-label>
                                 <input type="text" 
-                                       [(ngModel)]="clinica.pais"
                                        name="pais"
+                                       formControlName="pais"
                                        placeholder="Digite o país" matInput />
+                                <mat-error *ngIf="isCampoInvalido('pais')">
+                                    País é obrigatório
+                                </mat-error>
                             </mat-form-field>
                         </div>
                     </div>
@@ -124,12 +148,15 @@
                     <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="16px">
                         <div fxLayout="column" fxFlex="400px">
                             <mat-form-field class="full-width">
-                                <mat-label>CEP: *</mat-label>
+                                <mat-label>CEP: </mat-label>
                                 <input type="text" 
-                                       [(ngModel)]="clinica.cep"
-                                       name="cep"
+                                        name="cep"
+                                       formControlName="cep"
                                        matInput mask="00000-000"
                                        placeholder="Digite o CEP" matInput />
+                                <mat-error *ngIf="isCampoInvalido('cep')">
+                                    CEP é obrigatório
+                                </mat-error>
                             </mat-form-field>
                         </div>
                     </div>

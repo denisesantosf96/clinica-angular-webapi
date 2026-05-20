@@ -1,8 +1,55 @@
 <mat-toolbar color="primary">
-    <span>Cadastro de Clínicas</span>
+    <span class="logo">· Save Health</span>  
     <span class="spacer"></span>
-    <a routerLink="/lista-clinica">
-        <mat-icon fontIcon="medical_services"></mat-icon>
-        Clínica</a>
+
+    <a class="menu-link"
+       [matMenuTriggerFor]="menuInicio">
+        Início
+        <mat-icon>keyboard_arrow_down</mat-icon>
+    </a>
+
+    <mat-menu #menuInicio="matMenu">
+        <a mat-menu-item routerLink="/">
+            <span>Início</span>
+        </a>
+
+        <a mat-menu-item routerLink="/quem-somos">
+            <span>Quem Somos</span>
+        </a>
+    </mat-menu>
+
+    <a class="menu-link"
+       [matMenuTriggerFor]="menuServicos">
+        Serviços
+        <mat-icon>keyboard_arrow_down</mat-icon>
+    </a>
+
+    <mat-menu #menuServicos="matMenu">
+        <a mat-menu-item routerLink="/lista-clinica">
+            <span>Clínicas</span>
+        </a>
+
+        <a mat-menu-item routerLink="/lista-paciente">
+            <span>Pacientes</span>
+        </a>
+
+        <a mat-menu-item routerLink="/lista-especialidade">
+            <span>Especialidades</span>
+        </a>
+
+        <a mat-menu-item routerLink="/lista-medico">
+            <span>Médicos</span>
+        </a>
+    </mat-menu>
+
+    <button type="submit"
+            mat-flat-button 
+            class="btn-entrar">
+        <mat-icon fontIcon="account_circle"></mat-icon>
+        Entrar
+
+    </button>  
+
 </mat-toolbar>
+
 <router-outlet></router-outlet>
