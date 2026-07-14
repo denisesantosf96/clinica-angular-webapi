@@ -11,20 +11,15 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
-import { MatDatepickerModule, MatDatepickerIntl } from '@angular/material/datepicker';
-import { DateAdapter, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 
 import { NgxMaskDirective , provideNgxMask } from 'ngx-mask';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { APP_DATE_PROVIDER } from '../../date-format';
-
 import { MedicoService } from '../../services/medicoapi.service';
 import { Medico } from '../../models/medico.models';
 import { BrasilapiService } from '../../services/brasilapi.service';
 import { Estado, Municipio } from '../../models/brasilapi.models';
-import { MeuDatepickerIntl } from '../../datepicker-intl';
 
 @Component({
   selector: 'app-cadastro-medico',
@@ -38,14 +33,9 @@ import { MeuDatepickerIntl } from '../../datepicker-intl';
     MatIconModule,
     MatButtonModule,
     MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
     NgxMaskDirective
   ], providers: [
       provideNgxMask(),
-      APP_DATE_PROVIDER,
-      { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
-      { provide: MatDatepickerIntl, useClass: MeuDatepickerIntl }
     ],
   templateUrl: './cadastro-medico.html',
   styleUrl: './cadastro-medico.scss',
@@ -57,17 +47,18 @@ export class CadastroMedico implements OnInit {
   snack: MatSnackBar = inject(MatSnackBar);
   estados: Estado[] = [];
   municipios: Municipio[] = [];
+  cpfDuplicado = false;
+  rgDuplicado = false;
+  crmDuplicado = false;
 
   constructor(
     private service: MedicoService,
     private brasilApiService: BrasilapiService,
     private route: ActivatedRoute,
-    private router: Router,
-    private dateAdapter: DateAdapter<Date>
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.dateAdapter.setLocale('pt-BR');
 
     this.camposForm = new FormGroup({
       id: new FormControl(0),
@@ -102,8 +93,7 @@ export class CadastroMedico implements OnInit {
         next: (medicoEncontrado) => {
           const dataFormatada = medicoEncontrado.dataNascimento
             ? new Date(medicoEncontrado.dataNascimento)
-                .toISOString()
-                .split('T')[0]
+                .toLocaleDateString('pt-BR')
             : '';
 
           this.camposForm.patchValue({
@@ -155,17 +145,34 @@ export class CadastroMedico implements OnInit {
 
   salvar() {
     this.camposForm.markAllAsTouched();
-
     if (this.camposForm.invalid) {
       return;
     }
 
     const data = this.camposForm.value.dataNascimento;
 
-    const medico: Medico = {
-      ...this.camposForm.value,
-      dataNascimento: new Date(data).toISOString()
-    };
+    console.log('Data:', data);
+        console.log('Tipo:', typeof data);
+    
+        const [dia, mes, ano] = data.split('/');
+    
+        console.log('Dia:', dia);
+        console.log('Mês:', mes);
+        console.log('Ano:', ano);
+    
+        const dataNascimento = new Date(
+            Number(ano),
+            Number(mes) - 1,
+            Number(dia)
+        );
+    
+        console.log('Date:', dataNascimento);
+        console.log('isValid:', !isNaN(dataNascimento.getTime()));
+    
+        const medico: Medico  = {
+        ...this.camposForm.value,
+        dataNascimento: dataNascimento.toISOString()
+        };
 
     if (!this.atualizando) {
       this.service.salvar(medico).subscribe({
@@ -174,8 +181,32 @@ export class CadastroMedico implements OnInit {
           this.router.navigate(['/lista-medico']);
         },
         error: (err) => {
-          console.log(err.error);
-          this.mostrarMensagem('Erro ao salvar!');
+          this.cpfDuplicado = false;
+          this.rgDuplicado = false;
+          this.crmDuplicado = false;
+
+          if (err.error === 'CPF já cadastrado.') {
+            this.cpfDuplicado = true;
+            this.camposForm.get('cpf')?.setErrors({
+              cpfDuplicado: true
+            });
+          }
+
+          if (err.error === 'RG já cadastrado.') {
+            this.rgDuplicado = true;
+            this.camposForm.get('rg')?.setErrors({
+              rgDuplicado: true
+            });
+          } 
+
+          if (err.error === 'CRM já cadastrado.') {
+            this.crmDuplicado = true;
+            this.camposForm.get('crm')?.setErrors({
+              crmDuplicado: true
+            });
+          }
+
+          this.mostrarMensagem(err.error);
         }
       });
     } else {

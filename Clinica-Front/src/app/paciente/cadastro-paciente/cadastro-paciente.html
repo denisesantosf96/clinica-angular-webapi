@@ -28,10 +28,14 @@
                                 <input type="text" 
                                        name="cpf"
                                        formControlName="cpf"
-                                       matInput mask="000.000.000-00"
+                                       matInput 
+                                       mask="000.000.000-00"
                                        placeholder="Digite seu CPF" matInput/>
                                 <mat-error *ngIf="isCampoInvalido('cpf')">
                                     CPF é obrigatório
+                                </mat-error>
+                                <mat-error *ngIf="cpfDuplicado">
+                                    CPF já cadastrado
                                 </mat-error>
                             </mat-form-field>
                         </div>
@@ -49,6 +53,9 @@
                                 <mat-error *ngIf="isCampoInvalido('rg')">
                                     RG é obrigatório
                                 </mat-error>
+                                <mat-error *ngIf="rgDuplicado">
+                                    RG já cadastrado
+                                </mat-error>
                             </mat-form-field>
                         </div>
                     </div>
@@ -58,12 +65,11 @@
                             <mat-form-field class="full-width">
                                 <mat-label>Data de Nascimento: </mat-label>
                                 <input matInput
-                                       [matDatepicker]="picker" 
+                                       mask="00/00/0000" 
+                                       [dropSpecialCharacters]="false"
                                        name="dataNascimento"
                                        formControlName="dataNascimento"                                    
-                                       placeholder="Digite sua Data de Nascimento" matInput/>
-                                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                                <mat-datepicker #picker></mat-datepicker>
+                                       placeholder="Digite sua Data de Nascimento" matInput/>                                
                                 <mat-error *ngIf="isCampoInvalido('dataNascimento')">
                                     Data de Nascimento é obrigatória
                                 </mat-error>                                

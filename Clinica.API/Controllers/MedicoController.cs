@@ -38,6 +38,21 @@ namespace Clinica.API.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] MedicoDto dto)
         {
+            if (await _context.Medicos.AnyAsync(m => m.CPF == dto.CPF))
+            {
+                return BadRequest("CPF já cadastrado.");
+            }
+
+            if (await _context.Medicos.AnyAsync(m => m.RG == dto.RG))
+            {
+                return BadRequest("RG já cadastrado.");
+            }
+
+            if (await _context.Medicos.AnyAsync(m => m.CRM == dto.CRM))
+            {
+                return BadRequest("CRM já cadastrado.");
+            }                
+
             var medico = new Medico
             {
                 Nome = dto.Nome,
@@ -71,6 +86,21 @@ namespace Clinica.API.Controllers
 
             if (medico == null)
                 return NotFound();
+
+            if (await _context.Medicos.AnyAsync(m => m.CPF == dto.CPF && m.Id != id))
+            {
+                return BadRequest("CPF já cadastrado.");
+            }
+
+            if (await _context.Medicos.AnyAsync(m => m.RG == dto.RG && m.Id != id))
+            {
+                return BadRequest("RG já cadastrado.");
+            }
+
+            if (await _context.Medicos.AnyAsync(m => m.CRM == dto.CRM && m.Id != id))
+            {
+                return BadRequest("CRM já cadastrado.");
+            }
 
             medico.Nome = dto.Nome;
             medico.CPF = dto.CPF;

@@ -11,20 +11,15 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
-import { MatDatepickerModule, MatDatepickerIntl } from '@angular/material/datepicker';
-import { DateAdapter, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 
 import { NgxMaskDirective , provideNgxMask } from 'ngx-mask';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { APP_DATE_PROVIDER } from '../../date-format';
-
 import { PacienteService } from '../../services/pacienteapi.service';
 import { Paciente } from '../../models/paciente.models';
 import { BrasilapiService } from '../../services/brasilapi.service';
 import { Estado, Municipio } from '../../models/brasilapi.models';
-import { MeuDatepickerIntl } from '../../datepicker-intl';
 
 @Component({
   selector: 'app-cadastro-paciente',
@@ -39,14 +34,9 @@ import { MeuDatepickerIntl } from '../../datepicker-intl';
     MatIconModule,
     MatButtonModule,
     MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
     NgxMaskDirective
   ], providers: [
     provideNgxMask(),
-      APP_DATE_PROVIDER,
-      { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
-      { provide: MatDatepickerIntl, useClass: MeuDatepickerIntl }
     ],
   templateUrl: './cadastro-paciente.html',
   styleUrl: './cadastro-paciente.scss'
@@ -58,17 +48,17 @@ export class CadastroPaciente implements OnInit {
   snack: MatSnackBar = inject(MatSnackBar);
   estados: Estado[] = [];
   municipios: Municipio[] = [];
+  cpfDuplicado = false;
+  rgDuplicado = false;
 
   constructor(
     private service: PacienteService,
     private brasilApiService: BrasilapiService,
     private route: ActivatedRoute,
-    private router: Router,
-    private dateAdapter: DateAdapter<Date>
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.dateAdapter.setLocale('pt-BR');
 
     this.camposForm = new FormGroup({
       id: new FormControl(0),
@@ -101,8 +91,7 @@ export class CadastroPaciente implements OnInit {
         next: (pacienteEncontrado) => {
           const dataFormatada = pacienteEncontrado.dataNascimento
             ? new Date(pacienteEncontrado.dataNascimento)
-                .toISOString()
-                .split('T')[0]
+                .toLocaleDateString('pt-BR')
             : '';
 
           this.camposForm.patchValue({
@@ -160,9 +149,27 @@ export class CadastroPaciente implements OnInit {
 
     const data = this.camposForm.value.dataNascimento;
 
+    console.log('Data:', data);
+    console.log('Tipo:', typeof data);
+
+    const [dia, mes, ano] = data.split('/');
+
+    console.log('Dia:', dia);
+    console.log('Mês:', mes);
+    console.log('Ano:', ano);
+
+    const dataNascimento = new Date(
+        Number(ano),
+        Number(mes) - 1,
+        Number(dia)
+    );
+
+    console.log('Date:', dataNascimento);
+    console.log('isValid:', !isNaN(dataNascimento.getTime()));
+
     const paciente: Paciente = {
-      ...this.camposForm.value,
-      dataNascimento: new Date(data).toISOString()
+    ...this.camposForm.value,
+    dataNascimento: dataNascimento.toISOString()
     };
 
     if (!this.atualizando) {
@@ -172,8 +179,24 @@ export class CadastroPaciente implements OnInit {
           this.router.navigate(['/lista-paciente']);
         },
         error: (err) => {
-          console.log(err.error);
-          this.mostrarMensagem('Erro ao salvar!');
+          this.cpfDuplicado = false;
+          this.rgDuplicado = false;
+
+          if (err.error === 'CPF já cadastrado.') {
+            this.cpfDuplicado = true;
+            this.camposForm.get('cpf')?.setErrors({
+              cpfDuplicado: true
+            });
+          }
+
+          if (err.error === 'RG já cadastrado.') {
+            this.rgDuplicado = true;
+            this.camposForm.get('rg')?.setErrors({
+            rgDuplicado: true
+          });
+          }
+
+          this.mostrarMensagem(err.error);
         }
       });
     } else {
